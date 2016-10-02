@@ -20,3 +20,15 @@ Route::group(['namespace' => 'Front'], function () {
     Route::get('/profile', 'ProfileController@index')->name('front.profile');
 });
 
+
+Route::group(['namespace' => 'Back', 'prefix' => 'admin'], function () {
+    Route::get('/', 'IndexController@index')->name('back.index');
+    Route::get('/project-type', 'ProjectTypeController@index')->name('back.project_type');
+    Route::any('/project-type/update/{id?}', 'ProjectTypeController@update')->name('back.project_type.update');
+    Route::any('/project-type/destroy/{id}', 'ProjectTypeController@destroy')->name('back.project_type.destroy');
+    Route::any('/project-category', 'ProjectCategoryController@index')->name('back.project_category');
+    Route::any('/project-category/update/{id?}', 'ProjectCategoryController@update')->name('back.project_category.update');
+    Route::any('/project-category/destroy/{id}', 'ProjectCategoryController@destroy')->name('back.project_category.destroy');
+});
+
+Route::auth();
