@@ -16,9 +16,8 @@ class CreateTableTblProject extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('year',4);
-            $table->integer('project_type_id');
-            $table->string('image_content');
-            $table->string('image_content_credit');
+            $table->integer('producer_id');
+            $table->integer('category_id');
             $table->string('image_thumb');
             $table->text('desc');
             $table->timestamps();

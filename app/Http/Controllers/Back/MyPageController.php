@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Back;
 
 use App\Http\Controllers\Controller;
 
-class MypageController extends Controller
+class MyPageController extends Controller
 {
     public function __construct()
     {

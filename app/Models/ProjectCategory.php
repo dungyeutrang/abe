@@ -19,4 +19,18 @@ class ProjectCategory extends Model
     ];
 
     public $timestamps = true;
+
+    /**
+     * get category by project type
+     *
+     * @return mixed
+     */
+    public static function getCategoryByProjectType()
+    {
+        return ProjectCategory::select(['tbl_project_types.project_category_id','tbl_project_categories.name'])
+            ->join('tbl_project_types', 'tbl_project_categories.id', '=', 'tbl_project_types.project_category_id')
+            ->get();
+    }
 }
+
+

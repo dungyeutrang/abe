@@ -1,11 +1,19 @@
 @extends('layouts.app')
 
 @section('htmlheader_title')
-    Add Project Category
+    @if($id)
+        Update Project Category
+    @else
+        Add Project Category
+    @endif
 @endsection
 
 @section('contentheader_title')
-    Add Project Category
+    @if($id)
+        Update Project Category
+    @else
+        Add Project Category
+    @endif
 @endsection
 
 @section('main-content')
@@ -17,15 +25,11 @@
                     {{csrf_field()}}
                     <div class="box-body">
                         <div class="row-fluid">
-                            @if (count($errors) > 0)
-                                <div class="alert alert-danger">
-                                    <ul>
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
+                            <div class="alert alert-danger hide">
+                                <ul>
+
+                                </ul>
+                            </div>
                             <div class="form-group">
                                 <label for="name" class="col-sm-2 control-label">Name</label>
                                 <div class="col-sm-9">
@@ -36,6 +40,8 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-9">
+                                    <a onclick="window.history.back()" class="btn btn-default mg-right-20"><i
+                                                class="fa fa-arrow-left"></i> &nbsp;Back</a>
                                     <button type="submit" class="btn btn-success">Save</button>
                                 </div>
                             </div>

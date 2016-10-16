@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Back;
 
+use App\Models\ProjectType;
 use Illuminate\Http\Request;
 use App\Models\ProjectCategory;
 use App\Http\Requests\ProjectCategoryRequest;
+use Illuminate\Support\Facades\Session;
+use DB;
 
 class ProjectCategoryController extends MyPageController
 {
@@ -15,8 +18,9 @@ class ProjectCategoryController extends MyPageController
      */
     public function index()
     {
-        $data = ProjectCategory::orderBy('updated_at','desc')->paginate(PAGINATION_PROJECT_CATEGORY);
-        return view('back.project_category.index', compact('data'));
+        $data = ProjectCategory::orderBy('updated_at', 'desc')->paginate(PAGINATION_PROJECT_CATEGORY);
+        $indexBegin = ($data->currentPage() - 1) * PAGINATION_PROJECT_CATEGORY;
+        return view('back.project_category.index', compact('data', 'indexBegin'));
     }
 
 
@@ -48,6 +52,7 @@ class ProjectCategoryController extends MyPageController
         }
         $projectCategory->name = $request->get('name');
         $projectCategory->save();
+        Session::flash('message_success', MESSAGE_CREATE_OK);
         return redirect()->route('back.project_category');
     }
 
@@ -60,11 +65,21 @@ class ProjectCategoryController extends MyPageController
     public function destroy($id)
     {
         $projectCategory = ProjectCategory::find($id);
-        $message = MESSAGE_NOT_FOUND_RECORD;
-        if (!$projectCategory) {
-            return response()->view('errors.500', compact('message'));
+        DB::beginTransaction();
+        try {
+            $message = MESSAGE_NOT_FOUND_RECORD;
+            if (!$projectCategory) {
+                return response()->view('errors.500', compact('message'));
+            }
+            ProjectType::where('project_category_id', $projectCategory->id)->delete();
+            $projectCategory->destroy($id);
+            Session::flash('message_success', MESSAGE_DELETE_OK);
+            $projectCategory->delete();
+            DB::commit();
+        } catch (Exception $ex) {
+            DB::rollback();
+            Session::flash('message_error', MESSAGE_DELETE_ERROR);
         }
-        $projectCategory->destroy($id);
         return redirect()->route('back.project_category');
     }
 }

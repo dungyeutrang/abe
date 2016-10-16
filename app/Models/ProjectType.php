@@ -14,8 +14,14 @@ class ProjectType extends Model
      * @var array
      */
     protected $fillable = [
-        'name'
+        'name',
+        'project_category_id'
     ];
+
+    public function projectCategory()
+    {
+        return $this->belongsTo('App\Models\ProjectCategory','project_category_id');
+    }
 
     public $timestamps = true;
 }

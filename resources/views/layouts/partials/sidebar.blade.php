@@ -36,6 +36,8 @@
             <li class="active"><a href="{{ route('back.index') }}"><i class='fa fa-link'></i> <span>{{ trans('adminlte_lang::message.home') }}</span></a></li>
             <li><a href="{{route('back.project_category')}}"><i class='fa fa-link'></i> <span>Project Category</span></a></li>
             <li><a href="{{route('back.project_type')}}"><i class='fa fa-link'></i> <span>Project Type</span></a></li>
+            <li><a href="{{route('back.project_producer')}}"><i class='fa fa-link'></i> <span>Project Producer</span></a></li>
+            <li><a href="{{route('back.project')}}"><i class='fa fa-link'></i> <span>Project</span></a></li>
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->
