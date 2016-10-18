@@ -37,13 +37,13 @@ class ProjectTypeController extends MyPageController
             Session::flash('message_eror', 'You must create least a project category');
             return redirect()->route('back.project_type');
         }
+        if ($id) {
+            $projectType = ProjectType::find($id);
+            $message = MESSAGE_NOT_FOUND_RECORD;
+        }
         if ($request->isMethod('GET')) {
-            if ($id) {
-                $projectType = ProjectType::find($id);
-                $message = MESSAGE_NOT_FOUND_RECORD;
-                if (!$projectType) {
-                    return response()->view('errors.500', compact('message'));
-                }
+            if (!$projectType) {
+                return response()->view('errors.500', compact('message'));
             }
             return view('back.project_type.update', compact('projectType', 'id', 'projectCategory'));
         }

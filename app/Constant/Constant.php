@@ -10,3 +10,8 @@ define('MESSAGE_CREATE_OK', 'Create successful');
 define('MESSAGE_CREATE_ERROR', 'Create error');
 define('FORMAT_DATE', 'd/m/Y');
 define('STR_LIMIT', 30);
+define('STATUS_OK', 1);
+define('STATUS_ERR', 0);
+define('STATUS_FAILED', 2);
+define('TYPE_STRING', 1);
+define('TYPE_IMAGE', 2);

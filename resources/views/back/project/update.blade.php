@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{asset('plugins/jquery_filer/css/jquery.filer.css')}}" type="text/css">
     <link rel="stylesheet" href="{{asset('plugins/jquery_filer/css/themes/jquery.filer-dragdropbox-theme.css')}}"
           type="text/css">
+    <link rel="stylesheet" href="{{asset('plugins/datepicker/datepicker3.css')}}" type="text/css">
 @endsection
 @section('htmlheader_title')
     @if($id)
@@ -27,24 +28,21 @@
         <div class="col-md-12">
             <div class="box">
                 <!-- /.box-header -->
-                <form action="" method="post" role="form" class="form-horizontal" style="margin-top: 20px">
+                <form action="" method="post" id="form-main" role="form" class="form-horizontal"
+                      style="margin-top: 20px">
                     {{csrf_field()}}
                     <div class="box-body">
                         <div class="row-fluid">
-                            @if (count($errors) > 0)
-                                <div class="alert alert-danger">
-                                    <ul>
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
+                            <div class="alert alert-danger hide" id="alert-error">
+                                <ul>
+
+                                </ul>
+                            </div>
                             <div class="form-group">
                                 <label for="name" class="col-sm-2 control-label">Name</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" name="name"
-                                           @if($id) value="{{$projectCategory->name}}"
+                                           @if($id) value="{{$project->name}}"
                                            @else value="{{old('name')}}" @endif>
                                 </div>
                             </div>
@@ -86,14 +84,20 @@
                                             class="form-control">
                                         @foreach($projectTypes as $projectType)
                                             @if($id)
-                                                @if($projectType->project_category_id == $project->project_category_id)
-                                                    <option value="{{$projectType->id}}"
-                                                            @if(in_array($projectType->id,$projectContentTypes)) selected @endif>{{$projectType->name}}</option>
+                                                @if($projectType->project_category_id == $project->category_id)
+                                                    <?php $isSelected = false; ?>
+                                                    @foreach($projectContentTypes as $projectContentType)
+                                                        @if($projectContentType->project_type_id == $projectType->id)
+                                                            <?php $isSelected = true; ?>
+                                                            @break;
+                                                        @endif
+                                                    @endforeach
+                                                    <option @if($isSelected) selected
+                                                            @endif value="{{$projectType->id}}">{{$projectType->name}}</option>
                                                 @endif
                                             @else
                                                 @if($projectType->project_category_id == $firstProjectCategory->project_category_id)
-                                                    <option value="{{$projectType->id}}"
-                                                            @if(in_array($projectType->id,$projectContentTypes)) selected @endif>{{$projectType->name}}</option>
+                                                    <option value="{{$projectType->id}}">{{$projectType->name}}</option>
                                                 @endif
                                             @endif
                                         @endforeach
@@ -104,8 +108,11 @@
                                 <label for="project_category_id" class="col-sm-2 control-label">Thumb</label>
                                 <div class="col-sm-9">
                                     <input type="file" name="files[]" id="image_thumb" class="hide">
-                                    <div class="jFiler jFiler-theme-dragdropbox"
-                                         onclick="jQuery('#image_thumb').click()" id="image_thumb_container">
+                                    <div
+                                            onclick="jQuery('#image_thumb').click()"
+                                            @if($project->image_thumb)  class="hide jFiler jFiler-theme-dragdropbox"
+                                            @else class="jFiler jFiler-theme-dragdropbox"
+                                            @endif id="image_thumb_container">
                                         <div class="jFiler-input-dragDrop">
                                             <div class="jFiler-input-inner">
                                                 <div class="jFiler-input-icon">
@@ -120,11 +127,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="image_preview_container" class="hide">
-                                        <div id="wrapper_image_preview">
-                                            <img
-                                                    onerror="this.src='{{asset('img/noimage.gif')}}'" src="" alt=""
-                                                    id="image_preview">
+                                    <div id="image_preview_container" @if(!$project->image_thumb)class="hide" @endif>
+                                        <div @if($project->image_thumb) old_image="{{$project->image_thumb}}"
+                                             @endif id="wrapper_image_preview">
+                                            <img onerror="this.src='{{asset('img/noimage.gif')}}'"
+                                                 src="{{asset('upload/'.$project->image_thumb)}}" alt=""
+                                                 id="image_preview">
                                             <span onclick="jQuery('#image_thumb').click()" class="icon-edit"
                                                   id="icon-edit">
                                             <i class="fa fa-pencil"></i>
@@ -143,7 +151,8 @@
                                 <div class="col-sm-offset-2 col-sm-9">
                                     <a onclick="window.history.back()" class="btn btn-default mg-right-20"><i
                                                 class="fa fa-arrow-left"></i> &nbsp;Back</a>
-                                    <button type="submit" class="btn btn-success"><i class="fa fa-save"></i>&nbsp; Save
+                                    <button type="button" id="save" class="btn btn-success"><i class="fa fa-save"></i>&nbsp;
+                                        Save
                                     </button>
                                 </div>
                             </div>
@@ -154,15 +163,17 @@
             </div>
         </div>
     </div>
+    <?php $projectImages = $project->projectImage; ?>
+    @foreach($projectImages as $image)
+        <input type="hidden" value="{{$image->caption}}" class="caption-old">
+        <input type="hidden" value="{{$image->image}}" class='image-old'>
+    @endforeach
     <!-- The Modal -->
     <div id="myModal" class="modal">
-
         <!-- The Close Button -->
         <span class="close" style="cursor: pointer" id="close_modal">&times;</span>
-
         <!-- Modal Content (The Image) -->
-        <img class="modal-content" id="image_preview_modal" onerror="this.src='{{asset('img/noimage.gif')}}'" >
-
+        <img class="modal-content" id="image_preview_modal" onerror="this.src='{{asset('img/noimage.gif')}}'">
         <!-- Modal Caption (Image Text) -->
         <div id="caption"></div>
     </div>
@@ -172,8 +183,11 @@
     @parent
     <script>
         var URL_CHANGE_PROJECT_TYPE = '{{route('back.project.change_project_type')}}';
+        var BASE_PATH_FILE = '{{asset('upload').'/'}}';
     </script>
     <script type="text/javascript" src="{{asset('plugins/select2/select2.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('plugins/jquery_filer/js/jquery.filer.min.js')}}"></script>
+    <script type="text/javascript" src="{{asset('plugins/datepicker/bootstrap-datepicker.js')}}"></script>
+    <script type="text/javascript" src="{{asset('plugins/datepicker/locales/bootstrap-datepicker.vi.js')}}"></script>
     <script type="text/javascript" src="{{asset('back/js/project/update.js')}}"></script>
 @endsection
