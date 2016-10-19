@@ -57,7 +57,7 @@
                                 <td>{{$dt->year}}</td>
                                 <td>{{$dt->projectProducer->name}}</td>
                                 <td>{{$dt->projectCategory->name}}</td>
-                                <td>{{asset('upload/'.$dt->image_thumb)}}</td>
+                                <td><img class="img img-responsive" src="{{asset('upload/'.$dt->image_thumb)}}" onerror="this.src='{{asset('img/noimage.gif')}}'"></td>
                                 <td>{{date(FORMAT_DATE,strtotime($dt->updated_at))}}</td>
                                 <td>
                                     <a class="btn btn-sm btn-warning"

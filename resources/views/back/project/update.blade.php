@@ -128,9 +128,9 @@
                                         </div>
                                     </div>
                                     <div id="image_preview_container" @if(!$project->image_thumb)class="hide" @endif>
-                                        <div @if($project->image_thumb) old_image="{{$project->image_thumb}}"
-                                             @endif id="wrapper_image_preview">
-                                            <img onerror="this.src='{{asset('img/noimage.gif')}}'"
+                                        <div  id="wrapper_image_preview">
+                                            <img @if($project->image_thumb) old_image="{{$project->image_thumb}}"
+                                                 @endif onerror="this.src='{{asset('img/noimage.gif')}}'"
                                                  src="{{asset('upload/'.$project->image_thumb)}}" alt=""
                                                  id="image_preview">
                                             <span onclick="jQuery('#image_thumb').click()" class="icon-edit"
@@ -181,12 +181,12 @@
 
 @section('script')
     @parent
+    <script type="text/javascript" src="{{asset('plugins/jquery_filer/js/jquery.filer.min.js')}}"></script>
     <script>
         var URL_CHANGE_PROJECT_TYPE = '{{route('back.project.change_project_type')}}';
         var BASE_PATH_FILE = '{{asset('upload').'/'}}';
     </script>
     <script type="text/javascript" src="{{asset('plugins/select2/select2.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('plugins/jquery_filer/js/jquery.filer.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('plugins/datepicker/bootstrap-datepicker.js')}}"></script>
     <script type="text/javascript" src="{{asset('plugins/datepicker/locales/bootstrap-datepicker.vi.js')}}"></script>
     <script type="text/javascript" src="{{asset('back/js/project/update.js')}}"></script>

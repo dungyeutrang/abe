@@ -10,7 +10,12 @@ class Project extends Model
 
     public function projectCategory()
     {
-        return $this->belongsTo('App\Models\ProjectCategory', 'project_category_id');
+        return $this->belongsTo('App\Models\ProjectCategory', 'category_id');
+    }
+
+    public function projectProducer()
+    {
+        return $this->belongsTo('App\Models\ProjectProducer', 'producer_id');
     }
 
     public function projectImage()

@@ -92,19 +92,24 @@ class ProjectController extends MyPageController
             $arrayIndexs = $request->get('indexs');
             $arrayTypeFiles = $request->get('type_files');
             $arrayCaptions = $request->get('captions');
+            if (!is_array($arrayFileString)) {
+                $arrayFileString = [];
+            }
             if ($id) {
                 $projectImagesOld = ProjectImage::where('project_id', $project->id)->get();
                 foreach ($projectImagesOld as $projectImg) {
                     if (!in_array($projectImg->image, $arrayFileString)) {
                         FileHelper::delFile($projectImg->image);
                     }
-                    $projectImg->destroy();
+                    $projectImg->destroy($projectImg->id);
                 }
+                $numberFileString = 0;
+                $numberFileImage = 0;
                 foreach ($arrayIndexs as $index) {
                     if (intval($arrayTypeFiles[$index]) == TYPE_STRING) {
-                        $filePath = $arrayFileString[$index];
+                        $filePath = $arrayFileString[$numberFileString++];
                     } else {
-                        $filePath = FileHelper::saveFile($arrayFileImages[$index]);
+                        $filePath = FileHelper::saveFile($arrayFileImages[$numberFileImage++]);
                     }
                     ProjectImage::create([
                         'caption' => $arrayCaptions[$index],
@@ -123,9 +128,11 @@ class ProjectController extends MyPageController
                 }
             }
             DB::commit();
-            return response()->json(array('status' => STATUS_OK,'url'=>route('back.project')));
+            Session::flash('message_success',MESSAGE_CREATE_OK);
+            return response()->json(array('status' => STATUS_OK, 'url' => route('back.project')));
         } catch (Exception $ex) {
             DB::rollback();
+            Session::flash('message_error',MESSAGE_CREATE_ERROR);
             return response()->json(array('status' => STATUS_FAILED));
         }
     }
@@ -141,5 +148,31 @@ class ProjectController extends MyPageController
         $id = $request->get('id');
         $data = ProjectType::select(['id', 'name'])->where('project_category_id', $id)->get()->toArray();
         return response()->json($data);
+    }
+
+    function destroy($id)
+    {
+        $project = Project::find($id);
+        DB::beginTransaction();
+        try {
+            $message = MESSAGE_NOT_FOUND_RECORD;
+            if (!$project) {
+                return response()->view('errors.500', compact('message'));
+            }
+            FileHelper::delFile($project->image_thumb);
+            ProjectContentType::where('project_id',$project->id)->delete();
+            $projectImages = ProjectImage::where('project_id',$project->id)->get();
+            foreach($projectImages as $projectImage){
+                FileHelper::delFile($projectImage->image);
+                $projectImage->destroy($projectImage->id);
+            }
+            $project->delete();
+            Session::flash('message_success', MESSAGE_DELETE_OK);
+            DB::commit();
+        } catch (Exception $ex) {
+            DB::rollback();
+            Session::flash('message_error', MESSAGE_DELETE_ERROR);
+        }
+        return redirect()->route('back.project');
     }
 }
