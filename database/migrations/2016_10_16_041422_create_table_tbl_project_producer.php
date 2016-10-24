@@ -15,6 +15,7 @@ class CreateTableTblProjectProducer extends Migration
         Schema::create('tbl_project_producers', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('slug');
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\ProjectCategory;
 use Illuminate\Support\Facades\Validator;
 
 class ProjectTypeRequest extends Request
@@ -24,13 +25,31 @@ class ProjectTypeRequest extends Request
     public static function rules()
     {
         return [
-            'name' => 'required|max:255'
+            'name' => 'required|max:255|unique:tbl_project_types,name'
         ];
     }
 
 
-    public static function validateData($data = array())
+    public static function validateData($data = array(), $id = null)
     {
-        return Validator::make($data, self::rules());
+        $rules = self::rules();
+        $categoryId = isset($data['project_category_id']) ? $data['project_category_id'] : 0;
+        $projectCategory = ProjectCategory::find($categoryId);
+        if ($projectCategory) {
+            $url = $projectCategory->link;
+        } else {
+            $url = null;
+        }
+        if ($url) {
+            $rules['link'] = 'required|url|regex:[^' . $url . '/]|not_in:' . $url . '/|unique:tbl_project_types,link';
+        }
+
+        if ($id) {
+            $rules['name'] .= ',' . $id;
+            if ($url) {
+                $rules['link'] .= ',' . $id;
+            }
+        }
+        return Validator::make($data, $rules);
     }
 }

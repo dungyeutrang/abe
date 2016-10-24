@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Back;
 
+use App\Http\Controllers\Back\ProjectController;
 use App\Http\Requests\ProjectTypeRequest;
+use App\Models\Project;
 use App\Models\ProjectCategory;
+use App\Models\ProjectContentType;
 use Illuminate\Http\Request;
 use App\Models\ProjectType;
 use Illuminate\Support\Facades\Session;
+use DB;
 
 class ProjectTypeController extends MyPageController
 {
@@ -34,7 +38,7 @@ class ProjectTypeController extends MyPageController
         $projectType = new ProjectType();
         $projectCategory = ProjectCategory::all();
         if (!count($projectCategory)) {
-            Session::flash('message_eror', 'You must create least a project category');
+            Session::flash('message_error', 'You must create least a project category');
             return redirect()->route('back.project_type');
         }
         if ($id) {
@@ -48,16 +52,21 @@ class ProjectTypeController extends MyPageController
             return view('back.project_type.update', compact('projectType', 'id', 'projectCategory'));
         }
 
-        $validate = ProjectTypeRequest::validateData($request->all());
+        $validate = ProjectTypeRequest::validateData($request->all(),$id);
         if ($validate->fails()) {
             return redirect($request->path())
                 ->withErrors($validate)
                 ->withInput();
         }
         $projectType->name = $request->get('name');
+        $projectType->link = $request->get('link');
         $projectType->project_category_id = $request->get('project_category_id');
         $projectType->save();
-        Session::flash('message_success', MESSAGE_CREATE_OK);
+        if ($id) {
+            Session::flash('message_success', MESSAGE_UPDATE_OK);
+        } else {
+            Session::flash('message_success', MESSAGE_CREATE_OK);
+        }
         return redirect()->route('back.project_type');
     }
 
@@ -71,11 +80,26 @@ class ProjectTypeController extends MyPageController
     {
         $projectType = ProjectType::find($id);
         $message = MESSAGE_NOT_FOUND_RECORD;
-        if (!$projectType) {
-            return response()->view('errors.500', compact('message'));
+        DB::beginTransaction();
+        try {
+            if (!$projectType) {
+                return response()->view('errors.500', compact('message'));
+            }
+            $projects = Project::getProjectHaveTypeId($id);
+            $projectController = new ProjectController();
+            foreach ($projects as $project) {
+                if (count($project->projectContentType) === 1) {
+                    $projectController->destroy($project->id);
+                }
+            }
+            ProjectContentType::where('project_type_id', $id)->delete();
+            $projectType->delete();
+            Session::flash('message_success', MESSAGE_DELETE_OK);
+            DB::commit();
+        } catch (Exception $ex) {
+            DB::rollback();
+            Session::flash('message_error', MESSAGE_DELETE_ERROR);
         }
-        $projectType->destroy($id);
-        Session::flash('message_success', MESSAGE_DELETE_OK);
         return redirect()->route('back.project_type');
     }
 }

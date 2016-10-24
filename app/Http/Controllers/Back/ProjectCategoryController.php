@@ -8,6 +8,8 @@ use App\Models\ProjectCategory;
 use App\Http\Requests\ProjectCategoryRequest;
 use Illuminate\Support\Facades\Session;
 use DB;
+use App\Models\Project;
+
 
 class ProjectCategoryController extends MyPageController
 {
@@ -34,26 +36,55 @@ class ProjectCategoryController extends MyPageController
     public function update(Request $request, $id = null)
     {
         $projectCategory = new ProjectCategory();
-        if ($request->isMethod('GET')) {
-            if ($id) {
-                $projectCategory = ProjectCategory::find($id);
-                $message = MESSAGE_NOT_FOUND_RECORD;
-                if (!$projectCategory) {
-                    return response()->view('errors.500', compact('message'));
-                }
+        if ($id) {
+            $projectCategory = ProjectCategory::find($id);
+            $message = MESSAGE_NOT_FOUND_RECORD;
+            if (!$projectCategory) {
+                return response()->view('errors.500', compact('message'));
             }
+        }
+        if ($request->isMethod('GET')) {
             return view('back.project_category.update', compact('projectCategory', 'id'));
         }
-        $validate = ProjectCategoryRequest::validateData($request->all());
+        $validate = ProjectCategoryRequest::validateData($request->all(), $id);
         if ($validate->fails()) {
             return redirect($request->path())
                 ->withErrors($validate)
                 ->withInput();
         }
-        $projectCategory->name = $request->get('name');
-        $projectCategory->save();
-        Session::flash('message_success', MESSAGE_CREATE_OK);
+        DB::beginTransaction();
+        try {
+            $projectCategory->name = $request->get('name');
+            $oldLink = $projectCategory->link;
+            $projectCategory->link = str_replace(url('/'),'',$request->get('link'));
+            $projectCategory->save();
+            $projectTypes = ProjectType::where('project_category_id', $projectCategory->id)->get();
+            foreach ($projectTypes as $projectType) {
+                $projectType->link = str_replace($oldLink, $projectCategory->link, $projectType->link);
+                $projectType->save();
+            }
+
+            $projects = Project::where('category_id',$projectCategory->id)->get();
+            foreach ($projects as $project) {
+                $project->link = str_replace($oldLink, $projectCategory->link, $project->link);
+                $project->save();
+            }
+            if ($id) {
+                Session::flash('message_success', MESSAGE_UPDATE_OK);
+            } else {
+                Session::flash('message_success', MESSAGE_CREATE_OK);
+            }
+            DB::commit();
+        } catch (Exception $ex) {
+            if ($id) {
+                Session::flash('message_error', MESSAGE_UPDATE_ERROR);
+            } else {
+                Session::flash('message_error', MESSAGE_CREATE_ERROR);
+            }
+            DB::rollback();
+        }
         return redirect()->route('back.project_category');
+
     }
 
     /**
@@ -71,8 +102,14 @@ class ProjectCategoryController extends MyPageController
             if (!$projectCategory) {
                 return response()->view('errors.500', compact('message'));
             }
-            ProjectType::where('project_category_id', $projectCategory->id)->delete();
-            $projectCategory->destroy($id);
+
+            $projects = Project::where('category_id', $projectCategory->id)->get();
+            $projectController = new ProjectController();
+            foreach ($projects as $project) {
+                $projectController->destroy($project->id);
+            }
+
+            Project::where('category_id', $projectCategory->id)->delete();
             Session::flash('message_success', MESSAGE_DELETE_OK);
             $projectCategory->delete();
             DB::commit();

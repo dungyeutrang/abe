@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{asset('plugins/jquery_filer/css/themes/jquery.filer-dragdropbox-theme.css')}}"
           type="text/css">
     <link rel="stylesheet" href="{{asset('plugins/datepicker/datepicker3.css')}}" type="text/css">
+    <link href="https://cdn.quilljs.com/1.1.1/quill.snow.css" rel="stylesheet">
 @endsection
 @section('htmlheader_title')
     @if($id)
@@ -33,7 +34,7 @@
                     {{csrf_field()}}
                     <div class="box-body">
                         <div class="row-fluid">
-                            <div class="alert alert-danger hide" id="alert-error">
+                            <div tabindex="1" class="alert alert-danger hide" id="alert-error">
                                 <ul>
 
                                 </ul>
@@ -41,7 +42,7 @@
                             <div class="form-group">
                                 <label for="name" class="col-sm-2 control-label">Name</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="name"
+                                    <input type="text" class="form-control" id="name" name="name"
                                            @if($id) value="{{$project->name}}"
                                            @else value="{{old('name')}}" @endif>
                                 </div>
@@ -66,15 +67,31 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="form-group">
                                 <label for="project_category_id" class="col-sm-2 control-label">Category</label>
                                 <div class="col-sm-9">
+                                    <?php $categorySelect = $projectCategories[0]; ?>
                                     <select name="project_category_id" id="project_category_id" class="form-control">
                                         @foreach($projectCategories as $category)
-                                            <option @if(($id && $project->project_category_id==$category->project_category_id) || (!$id && old('project_category_id')==$category->project_category_id)) selected
-                                                    @endif value="{{$category->project_category_id}}">{{$category->name}}</option>
+                                            <option link="{{url('/').$category->link}}"
+                                                    @if(($id && $project->project_category_id==$category->project_category_id) || (!$id && old('project_category_id')==$category->project_category_id)) selected
+                                                    <?php $categorySelect = $category ?>        @endif value="{{$category->project_category_id}}">{{$category->name}}</option>
                                         @endforeach
                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">Link</label>
+                                <div class="col-sm-9">
+                                    <input disabled id="link_preview" type="text" class="form-control"
+                                           @if($id) value="{{url('/').$project->link}}"
+                                           @else value="{{url('/').$categorySelect->link}}" @endif>
+
+                                    <input id="link_real" type="hidden" class="form-control" name="link"
+                                           @if($id) value="{{url('/').$project->link}}"
+                                           @else value="{{url('/').$categorySelect->link}}" @endif>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -105,6 +122,12 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label for="project_category_id" class="col-sm-2 control-label">Description</label>
+                                <div class="col-sm-9">
+                                    <div style="min-height: 150px" id="desc">{{$project->desc}}</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label for="project_category_id" class="col-sm-2 control-label">Thumb</label>
                                 <div class="col-sm-9">
                                     <input type="file" name="files[]" id="image_thumb" class="hide">
@@ -128,7 +151,7 @@
                                         </div>
                                     </div>
                                     <div id="image_preview_container" @if(!$project->image_thumb)class="hide" @endif>
-                                        <div  id="wrapper_image_preview">
+                                        <div id="wrapper_image_preview">
                                             <img @if($project->image_thumb) old_image="{{$project->image_thumb}}"
                                                  @endif onerror="this.src='{{asset('img/noimage.gif')}}'"
                                                  src="{{asset('upload/'.$project->image_thumb)}}" alt=""
@@ -189,5 +212,6 @@
     <script type="text/javascript" src="{{asset('plugins/select2/select2.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('plugins/datepicker/bootstrap-datepicker.js')}}"></script>
     <script type="text/javascript" src="{{asset('plugins/datepicker/locales/bootstrap-datepicker.vi.js')}}"></script>
+    <script src="https://cdn.quilljs.com/1.1.1/quill.js"></script>
     <script type="text/javascript" src="{{asset('back/js/project/update.js')}}"></script>
 @endsection

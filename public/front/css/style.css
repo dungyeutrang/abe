@@ -2605,7 +2605,7 @@ textarea.focus,
 	margin-right: 0;
 }
 #top #site-name .c6{
-	margin-right:1em;
+	/*margin-right:1em;*/
 }
 #top #site-name.show{
 	-webkit-transform: translate(0, 0);

@@ -5170,5 +5170,33 @@ fieldset[disabled] .btn-yahoo.active {
   width: 50px;
   text-align: center;
 }
+.wrapper_image_preview {
+  display: inline-block;
+}
+.image_preview_container {
+  text-align: center;
+}
+.image_preview {
+  max-width: 100%;
+  border: 2px dashed #ccc;
+}
+.icon-delete {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  background: #d44747;
+  color: white;
+  font-size: 20px;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 50%;
+  margin-left: -25px;
+  margin-top: -25px;
+}
+.icon-delete i {
+  margin-top: 13px;
+}
 
 /*# sourceMappingURL=AdminLTE.css.map */

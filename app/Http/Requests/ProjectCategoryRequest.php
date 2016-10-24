@@ -24,13 +24,21 @@ class ProjectCategoryRequest extends Request
     public static function rules()
     {
         return [
-            'name' => 'required|max:255'
+            'name' => 'required|max:255|unique:tbl_project_categories,name',
+            'link' => 'required|url|regex:[^'.route('front.project').'/]|not_in:'.route('front.project').'/|unique:tbl_project_categories,link'
         ];
     }
 
 
-    public static function validateData($data = array())
+    public static function validateData($data = array(), $id = null)
     {
-        return Validator::make($data, self::rules());
+        $rules = self::rules();
+        if ($id) {
+            $rules['name'] .= ',' . $id;
+            $rules['link'] .= ',' . $id;
+        }
+        return Validator::make($data, $rules);
     }
+
+
 }

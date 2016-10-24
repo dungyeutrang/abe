@@ -15,6 +15,7 @@ class CreateTableTblProjectCategory extends Migration
         Schema::create('tbl_project_categories', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('link');
             $table->timestamps();
         });
     }

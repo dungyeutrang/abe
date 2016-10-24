@@ -15,6 +15,7 @@ class CreateTableTblProject extends Migration
         Schema::create('tbl_projects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->string('link');
             $table->string('year',4);
             $table->integer('producer_id');
             $table->integer('category_id');

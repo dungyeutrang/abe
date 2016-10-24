@@ -16,6 +16,7 @@ class CreateTableTblProjectType extends Migration
             $table->increments('id');
             $table->integer('project_category_id');
             $table->string('name');
+            $table->string('link');
             $table->timestamps();
         });
     }

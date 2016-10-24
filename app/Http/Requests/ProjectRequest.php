@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Support\Facades\Validator;
+use App\Models\ProjectCategory;
 
 class ProjectRequest extends Request
 {
@@ -34,12 +35,26 @@ class ProjectRequest extends Request
     }
 
 
-    public static function validateData($data = array(), $isUpdate = true)
+    public static function validateData($data = array(), $id = true)
     {
         $rules = self::rules();
-        if ($isUpdate) {
-            $rules['image_thumb'] = '|mimes:jpeg,png,gif,jpg';
+        $categoryId = isset($data['project_category_id']) ? $data['project_category_id'] : 0;
+        $projectCategory = ProjectCategory::find($categoryId);
+        if ($projectCategory) {
+            $url = url('/').$projectCategory->link;
+        } else {
+            $url = null;
         }
-        return Validator::make($data, self::rules());
+        if ($url) {
+            $rules['link'] = 'required|url|regex:[^' . $url . '/]|not_in:' . $url . '/|unique:tbl_project_types,link';
+        }
+
+        if ($id) {
+            $rules['image_thumb'] = '|mimes:jpeg,png,gif,jpg';
+            if ($url) {
+                $rules['link'] .= ',' . $id;
+            }
+        }
+        return Validator::make($data, $rules);
     }
 }

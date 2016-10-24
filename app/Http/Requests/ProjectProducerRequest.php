@@ -24,13 +24,19 @@ class ProjectProducerRequest extends Request
     public static function rules()
     {
         return [
-            'name' => 'required|max:255'
+            'name' => 'required|max:255|unique:tbl_project_producers,name',
+            'slug' => 'required|max:255|unique:tbl_project_producers,slug'
         ];
     }
 
 
-    public static function validateData($data = array())
+    public static function validateData($data = array(), $id = null)
     {
-        return Validator::make($data, self::rules());
+        $rules = self::rules();
+        if ($id) {
+            $rules['name'] .= ',' . $id;
+            $rules['slug'] .= ',' . $id;
+        }
+        return Validator::make($data, $rules);
     }
 }

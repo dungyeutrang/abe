@@ -37,7 +37,7 @@
                             <div class="form-group">
                                 <label for="name" class="col-sm-2 control-label">Name</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="name"
+                                    <input id="name" type="text" class="form-control" name="name"
                                            @if($id) value="{{$projectType->name}}"
                                            @else value="{{old('name')}}" @endif>
                                 </div>
@@ -45,19 +45,37 @@
                             <div class="form-group">
                                 <label for="name" class="col-sm-2 control-label">Project Category</label>
                                 <div class="col-sm-9">
-                                    <select name="project_category_id" class="form-control">
+                                    <?php $projectCategorySelected = $projectCategory[0]; ?>
+                                    <select id="project_category_id" name="project_category_id" class="form-control">
                                         @foreach($projectCategory as $pc)
-                                            <option value="{{$pc->id}}"
+                                            <option link="{{$pc->link}}" value="{{$pc->id}}"
                                                     @if($id && $pc->id == $projectType->project_category_id) selected
-                                                    @elseif(!$id && old('project_category_id')==$pc->id)  selected @endif >{{$pc->name}}</option>
+                                                    <?php $projectCategorySelected = $pc ?>
+                                                    @elseif(!$id && old('project_category_id')==$pc->id) <?php $projectCategorySelected = $pc ?>  selected @endif >{{$pc->name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">Link</label>
+                                <div class="col-sm-9">
+                                    <input disabled id="link_preview" type="text"
+                                           class="form-control"
+                                           @if($id) value="{{$projectType->link}}"
+                                           @else value="{{$projectCategorySelected->link.'/'}}" @endif>
+
+                                    <input id="link_real" type="hidden"
+                                           class="form-control" name="link"
+                                           @if($id) value="{{$projectType->link}}"
+                                           @else value="{{$projectCategorySelected->link.'/'}}" @endif>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-9">
-                                    <a  onclick="window.history.back()" class="btn btn-default mg-right-20"><i class="fa fa-arrow-left"></i> &nbsp;Back</a>
-                                    <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> &nbsp;Save </button>
+                                    <a onclick="window.history.back()" class="btn btn-default mg-right-20"><i
+                                                class="fa fa-arrow-left"></i> &nbsp;Back</a>
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> &nbsp;Save
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -68,3 +86,11 @@
         </div>
     </div>
 @endsection
+
+@section('script')
+    @parent
+    <script type="text/javascript" src="{{asset('back/js/project_type/update.js')}}"></script>
+@endsection
+
+
+

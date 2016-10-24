@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Back;
 
+use App\Models\Project;
 use App\Models\ProjectProducer;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProjectProducerRequest;
 use Illuminate\Support\Facades\Session;
+use DB;
 
 class ProjectProducerController extends MyPageController
 {
@@ -32,25 +34,30 @@ class ProjectProducerController extends MyPageController
     public function update(Request $request, $id = null)
     {
         $projectProducer = new ProjectProducer();
-        if ($request->isMethod('GET')) {
-            if ($id) {
-                $projectProducer = ProjectProducer::find($id);
-                $message = MESSAGE_NOT_FOUND_RECORD;
-                if (!$projectProducer) {
-                    return response()->view('errors.500', compact('message'));
-                }
+        if ($id) {
+            $projectProducer = ProjectProducer::find($id);
+            $message = MESSAGE_NOT_FOUND_RECORD;
+            if (!$projectProducer) {
+                return response()->view('errors.500', compact('message'));
             }
-            return view('back.project_producer.update', compact('projectCategory', 'id'));
         }
-        $validate = ProjectProducerRequest::validateData($request->all());
+        if ($request->isMethod('GET')) {
+            return view('back.project_producer.update', compact('projectProducer', 'id'));
+        }
+        $validate = ProjectProducerRequest::validateData($request->all(), $id);
         if ($validate->fails()) {
             return redirect($request->path())
                 ->withErrors($validate)
                 ->withInput();
         }
         $projectProducer->name = $request->get('name');
+        $projectProducer->slug = $request->get('slug');
         $projectProducer->save();
-        Session::flash('message_success', MESSAGE_CREATE_OK);
+        if ($id) {
+            Session::flash('message_success', MESSAGE_UPDATE_OK);
+        } else {
+            Session::flash('message_success', MESSAGE_CREATE_OK);
+        }
         return redirect()->route('back.project_producer');
     }
 
@@ -63,12 +70,20 @@ class ProjectProducerController extends MyPageController
     public function destroy($id)
     {
         $projectProducer = ProjectProducer::find($id);
+        DB::beginTransaction();
         try {
             $message = MESSAGE_NOT_FOUND_RECORD;
             if (!$projectProducer) {
                 return response()->view('errors.500', compact('message'));
             }
+            $projects = Project::where('producer_id', $projectProducer->id)->get();
+            $projectController = new ProjectController();
+            foreach ($projects as $project) {
+                $projectController->destroy($project->id);
+            }
             $projectProducer->delete();
+            Session::flash('message_success', MESSAGE_DELETE_OK);
+            DB::commit();
         } catch (Exception $ex) {
             Session::flash('message_error', MESSAGE_DELETE_ERROR);
         }

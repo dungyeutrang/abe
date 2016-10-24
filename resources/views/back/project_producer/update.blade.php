@@ -37,14 +37,29 @@
                             <div class="form-group">
                                 <label for="name" class="col-sm-2 control-label">Name</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" name="name"
+                                    <input id="name" type="text" class="form-control" name="name"
                                            @if($id) value="{{$projectProducer->name}}"
                                            @else value="{{old('name')}}" @endif>
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">Slug</label>
+                                <div class="col-sm-9">
+                                    <input disabled id="slug" type="text"
+                                           class="form-control"
+                                           @if($id) value="{{$projectProducer->slug}}"
+                                            @endif>
+
+                                    <input id="slug_real" type="hidden"
+                                           class="form-control" name="slug"
+                                           @if($id) value="{{$projectProducer->slug}}"
+                                            @endif>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <div class="col-sm-offset-2 col-sm-9">
-                                    <a  onclick="window.history.back()" class="btn btn-default mg-right-20"><i class="fa fa-arrow-left"></i> &nbsp;Back</a>
+                                    <a onclick="window.history.back()" class="btn btn-default mg-right-20"><i
+                                                class="fa fa-arrow-left"></i> &nbsp;Back</a>
                                     <button type="submit" class="btn btn-success">Save</button>
                                 </div>
                             </div>
@@ -55,4 +70,9 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('script')
+    @parent
+    <script type="text/javascript" src="{{asset('back/js/project_producer/update.js')}}"></script>
 @endsection

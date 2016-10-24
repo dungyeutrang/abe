@@ -40,7 +40,7 @@ class ProjectController extends MyPageController
         $projectProducers = ProjectProducer::all();
         $projectContentTypes = $project->projectContentType()->select('project_type_id')->get();
         if (!$projectCategories->count()) {
-            Session::flash('message_error', 'You must create least a project category');
+            Session::flash('message_error', 'You must create least a project category and project type');
             return redirect()->route('back.project');
         }
 
@@ -59,7 +59,7 @@ class ProjectController extends MyPageController
             return view('back.project.update', compact('project', 'id', 'projectCategories', 'projectTypes', 'projectProducers', 'projectContentTypes', 'firstProjectCategory'));
         }
 
-        $validate = ProjectRequest::validateData($request->all(), $id ? true : false);
+        $validate = ProjectRequest::validateData($request->all(), $id);
         if ($validate->fails()) {
             return response()->json(array('status' => STATUS_ERR, 'errors' => $validate->errors()));
         }
@@ -69,6 +69,7 @@ class ProjectController extends MyPageController
             $oldPathImageThumb = $project->image_thumb;
             $project->name = $request->get('name');
             $project->year = $request->get('year');
+            $project->link = str_replace(url('/'),'',$request->get('link'));
             $project->category_id = $request->get('project_category_id');
             $project->producer_id = $request->get('project_producer_id');
             if ($request->hasFile('thumb')) {
@@ -76,6 +77,7 @@ class ProjectController extends MyPageController
                 $project->image_thumb = $pathSaveImageThumb;
                 FileHelper::delFile($oldPathImageThumb);
             }
+            $project->desc = $request->get('desc');
             $project->save();
             $types = $request->get('type');
             if ($id) {
@@ -95,6 +97,19 @@ class ProjectController extends MyPageController
             if (!is_array($arrayFileString)) {
                 $arrayFileString = [];
             }
+            if (!is_array($arrayFileImages)) {
+                $arrayFileImages = [];
+            }
+            if (!is_array($arrayIndexs)) {
+                $arrayIndexs = [];
+            }
+            if (!is_array($arrayTypeFiles)) {
+                $arrayTypeFiles = [];
+            }
+            if (!is_array($arrayCaptions)) {
+                $arrayCaptions = [];
+            }
+
             if ($id) {
                 $projectImagesOld = ProjectImage::where('project_id', $project->id)->get();
                 foreach ($projectImagesOld as $projectImg) {
@@ -128,11 +143,11 @@ class ProjectController extends MyPageController
                 }
             }
             DB::commit();
-            Session::flash('message_success',MESSAGE_CREATE_OK);
+            Session::flash('message_success', MESSAGE_CREATE_OK);
             return response()->json(array('status' => STATUS_OK, 'url' => route('back.project')));
         } catch (Exception $ex) {
             DB::rollback();
-            Session::flash('message_error',MESSAGE_CREATE_ERROR);
+            Session::flash('message_error', MESSAGE_CREATE_ERROR);
             return response()->json(array('status' => STATUS_FAILED));
         }
     }
@@ -160,9 +175,9 @@ class ProjectController extends MyPageController
                 return response()->view('errors.500', compact('message'));
             }
             FileHelper::delFile($project->image_thumb);
-            ProjectContentType::where('project_id',$project->id)->delete();
-            $projectImages = ProjectImage::where('project_id',$project->id)->get();
-            foreach($projectImages as $projectImage){
+            ProjectContentType::where('project_id', $project->id)->delete();
+            $projectImages = ProjectImage::where('project_id', $project->id)->get();
+            foreach ($projectImages as $projectImage) {
                 FileHelper::delFile($projectImage->image);
                 $projectImage->destroy($projectImage->id);
             }

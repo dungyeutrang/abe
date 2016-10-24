@@ -27,7 +27,7 @@ class ProjectCategory extends Model
      */
     public static function getCategoryByProjectType()
     {
-        return ProjectCategory::select(['tbl_project_types.project_category_id','tbl_project_categories.name'])
+        return ProjectCategory::select(['tbl_project_types.project_category_id','tbl_project_categories.name','tbl_project_categories.link'])
             ->join('tbl_project_types', 'tbl_project_categories.id', '=', 'tbl_project_types.project_category_id')
             ->distinct('tbl_project_categories.id')
             ->get();

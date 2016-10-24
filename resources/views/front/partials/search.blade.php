@@ -3,7 +3,7 @@
         <a href="#">
             <i class="icon-search icon"></i>
             <span class="label">
-				<span class="main-label">ALL</span>
+				<span class="main-label">@yield('search_title','ALL')</span>
 			</span>
         </a>
     </div>

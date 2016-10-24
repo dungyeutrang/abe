@@ -1,6 +1,6 @@
 <nav id="gnavi-links" class="nav-links">
     <ul class="hover-line-links">
-        <li><a href="{{route('front.project')}}"><span>PROJECTS</span></a></li>
+        <li><a @if(str_contains(Request::fullUrl(),route('front.project'))) class="current" @endif href="{{route('front.project')}}"><span>PROJECTS</span></a></li>
         <li><a href="{{route('front.new')}}"><span>NEWS</span></a></li>
         <li><a href="{{route('front.profile')}}"><span>PROFILE</span></a></li>
         <li><a href="{{route('front.press')}}"><span>PRESS</span></a></li>
