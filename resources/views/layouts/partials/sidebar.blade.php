@@ -41,6 +41,8 @@
             <li><a href="{{route('back.project')}}"><i class='fa fa-link'></i> <span>Project</span></a></li>
             <li><a href="{{route('back.new_type')}}"><i class='fa fa-link'></i> <span>New Type</span></a></li>
             <li><a href="{{route('back.new')}}"><i class='fa fa-link'></i> <span>New </span></a></li>
+            <li><a href="{{route('back.press')}}"><i class='fa fa-link'></i> <span>Press </span></a></li>
+            <li><a href="{{route('back.profile')}}"><i class='fa fa-link'></i> <span>Profile </span></a></li>
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->

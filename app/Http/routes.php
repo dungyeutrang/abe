@@ -18,7 +18,8 @@ Route::group(['namespace' => 'Front'], function () {
     Route::get('/projects/{category}/{detail}', 'ProjectController@detail')->name('front.project.category.detail');
     Route::get('/projects/{category}/{type}/{list}', 'ProjectController@type')->name('front.project.category.type.list');
     Route::get('/news', 'NewsController@index')->name('front.new');
-    Route::get('/news/{url}', 'NewsController@detail')->name('front.new.detail');
+    Route::get('/news/{type}', 'NewsController@type')->name('front.new.type');
+    Route::get('/news/{type}/{detail}', 'NewsController@detail')->name('front.new.detail');
     Route::get('/press', 'PressController@index')->name('front.press');
     Route::get('/contact', 'ContactController@index')->name('front.contact');
     Route::get('/profile', 'ProfileController@index')->name('front.profile');
@@ -54,6 +55,8 @@ Route::group(['namespace' => 'Back', 'prefix' => 'admin'], function () {
     Route::any('/new/destroy/{id}', 'NewController@destroy')->name('back.new.destroy');
 
     Route::any('/slider', 'SliderController@index')->name('back.slider');
+    Route::any('/press', 'PressController@index')->name('back.press');
+    Route::any('/profile', 'ProfileController@index')->name('back.profile');
 
 });
 

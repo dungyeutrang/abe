@@ -54,6 +54,7 @@ class NewController extends MyPageController
             FileHelper::delFile($oldPathImageThumb);
         }
         $new->desc = $request->get('desc');
+        $new->more_desc = $request->get('more_desc');
         $arrayFileImages = $request->file('images');
         $arrayFileString = $request->get('images');
         $arrayIndexs = $request->get('indexs');

@@ -21,6 +21,7 @@ class CreateTableTblNews extends Migration
             $table->string('image_thumb');
             $table->string('images');
             $table->text('desc');
+            $table->text('more_desc');
             $table->timestamps();
         });
     }

@@ -66,11 +66,12 @@ $(function () {
         var value = $(this).val();
         $.getJSON(URL_CHANGE_PROJECT_TYPE, {id: value}, function (data) {
             var options = '';
-            $.each(data, function (index, value) {
-                options = '<option value="' + value.id + '">' + value.name + '</option>';
-            })
             $projectContentType.empty();
+            $.each(data, function (index, value) {
+                options += '<option value="' + value.id + '">' + value.name + '</option>';
+            })
             $projectContentType.append(options);
+            $projectContentType.select2();
         });
     });
     $imageThumb.change(function () {
@@ -232,7 +233,7 @@ $(function () {
             formData.append('captions[]', $('.caption').eq(index).val());
         })
 
-        formData.append('desc', $('#desc').text());
+        formData.append('desc', $('#desc .ql-editor').html());
 
         $.ajax({
             type: 'post',
@@ -289,7 +290,6 @@ function convertToSlug(str) {
 
     //Đổi chữ hoa thành chữ thường
     slug = str.toLowerCase();
-    console.log(slug);
     //Đổi ký tự có dấu thành không dấu
     slug = slug.replace(/á|à|ả|ạ|ã|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/gi, 'a');
     slug = slug.replace(/é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/gi, 'e');

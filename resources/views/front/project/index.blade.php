@@ -13,7 +13,7 @@
             <li><a href="{{route('front.project')}}">ALL</a></li>
             @foreach($categories as $category)
                 <li>
-                    <a href="{{$category->link}}">{{strtoupper($category->name)}}</a>
+                    <a href="{{url('/').$category->link}}">{{strtoupper($category->name)}}</a>
                     <div class="sub-nav-links mCustomScrollbar _mCS_1 mCS_no_scrollbar"
                          style="overflow: visible; display: none;">
                         <div id="mCSB_1" class="mCustomScrollBox mCS-sub-nav mCSB_vertical mCSB_outside" tabindex="0">
@@ -44,13 +44,12 @@
                                         <dt>Producer</dt>
                                         <dd>
                                             <ul class="hover-line-links">
+                                                <?php $categoryByProducer = $groupItem[$category->id]['producers'] ?>
                                                 @foreach($categoryByProducer as $producer)
-                                                    @if($producer->category_id == $category->id)
                                                         <li>
-                                                            <a href="{{url('/').$category->link.'/producer/'.$producer->projectProducer->slug}}"><span>{{$producer->projectProducer->name}}
+                                                            <a href="{{url('/').$category->link.'/producer/'.$producer->slug}}"><span>{{$producer->name}}
                                                                     [{{$producer->count}}]</span></a>
                                                         </li>
-                                                    @endif
                                                 @endforeach
                                             </ul>
                                         </dd>
@@ -59,13 +58,12 @@
                                         <dt>Year</dt>
                                         <dd>
                                             <ul class="hover-line-links">
+                                                <?php $categoryByYear = $groupItem[$category->id]['years'] ?>
                                                 @foreach($categoryByYear as $projectYear)
-                                                    @if($producer->category_id == $category->id)
                                                         <li>
                                                             <a href="{{url('/').$category->link.'/year/'.$projectYear->year}}"><span>{{$projectYear->year}}
                                                                     [{{$projectYear->count}}]</span></a>
                                                         </li>
-                                                    @endif
                                                 @endforeach
                                             </ul>
                                         </dd>
@@ -74,13 +72,12 @@
                                         <dt>Type</dt>
                                         <dd>
                                             <ul class="hover-line-links">
+                                                <?php $categoryByType = $groupItem[$category->id]['types'] ?>
                                                 @foreach($categoryByType as $projectType)
-                                                    @if($producer->category_id == $category->id)
                                                         <li>
                                                             <a href="{{url('/').$projectType->link}}"><span>{{$projectType->projectType->name}}
                                                                     [{{$projectType->count}}]</span></a>
                                                         </li>
-                                                    @endif
                                                 @endforeach
                                             </ul>
                                         </dd>

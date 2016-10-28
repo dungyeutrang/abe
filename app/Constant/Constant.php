@@ -19,3 +19,8 @@ define('STATUS_ERR', 0);
 define('STATUS_FAILED', 2);
 define('TYPE_STRING', 1);
 define('TYPE_IMAGE', 2);
+define('PROJECT_TYPE','type');
+define('PROJECT_PRODUCER','producer');
+define('PROJECT_YEAR','year');
+define('TYPE_PRESS_VI',1);
+define('TYPE_PRESS_EN',2);

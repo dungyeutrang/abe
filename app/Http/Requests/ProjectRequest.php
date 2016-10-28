@@ -25,7 +25,7 @@ class ProjectRequest extends Request
     public static function rules()
     {
         return [
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:tbl_projects,name',
             'year' => 'required|max:16',
             'project_producer_id' => 'required|integer',
             'type' => 'required|array',
@@ -46,11 +46,15 @@ class ProjectRequest extends Request
             $url = null;
         }
         if ($url) {
-            $rules['link'] = 'required|url|regex:[^' . $url . '/]|not_in:' . $url . '/|unique:tbl_project_types,link';
+            $rules['link'] = 'required|url|regex:[^' . $url . '/]|not_in:' . $url . '/|unique:tbl_projects,link';
+        }
+
+        if (isset($data['thumb']) && !is_string($data['thumb'])) {
+            $rules['thumb'] .= '|mimes:jpeg,png,gif,jpg';
         }
 
         if ($id) {
-            $rules['image_thumb'] = '|mimes:jpeg,png,gif,jpg';
+            $rules['name'] .= ',' . $id;
             if ($url) {
                 $rules['link'] .= ',' . $id;
             }

@@ -40,7 +40,7 @@ class NewRequest extends Request
         $newTypeId = isset($data['new_id']) ? $data['new_id'] : 0;
         $newType = NewType::find($newTypeId);
         if ($newType) {
-            $url = url('/').$newType->link;
+            $url = url('/') . $newType->link;
         } else {
             $url = null;
         }
@@ -48,9 +48,13 @@ class NewRequest extends Request
             $rules['link'] = 'required|url|regex:[^' . $url . '/]|not_in:' . $url . '/|unique:tbl_project_types,link';
         }
 
+        if (isset($data['thumb']) && !is_string($data['thumb'])) {
+            $rules['thumb'] .= '|mimes:jpeg,png,gif,jpg';
+        }
+
+
         if ($id) {
-            $rules['image_thumb'] = '|mimes:jpeg,png,gif,jpg';
-            $rules['name'] = ','.$id;
+            $rules['name'] .= ',' . $id;
             if ($url) {
                 $rules['link'] .= ',' . $id;
             }

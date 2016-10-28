@@ -48,7 +48,7 @@
                                     <?php $projectCategorySelected = $projectCategory[0]; ?>
                                     <select id="project_category_id" name="project_category_id" class="form-control">
                                         @foreach($projectCategory as $pc)
-                                            <option link="{{$pc->link}}" value="{{$pc->id}}"
+                                            <option link="{{url('/').$pc->link.'/type'}}" value="{{$pc->id}}"
                                                     @if($id && $pc->id == $projectType->project_category_id) selected
                                                     <?php $projectCategorySelected = $pc ?>
                                                     @elseif(!$id && old('project_category_id')==$pc->id) <?php $projectCategorySelected = $pc ?>  selected @endif >{{$pc->name}}</option>
@@ -62,12 +62,12 @@
                                     <input disabled id="link_preview" type="text"
                                            class="form-control"
                                            @if($id) value="{{$projectType->link}}"
-                                           @else value="{{$projectCategorySelected->link.'/'}}" @endif>
+                                           @else value="{{url('/').$projectCategorySelected->link.'/type'}}" @endif>
 
                                     <input id="link_real" type="hidden"
                                            class="form-control" name="link"
                                            @if($id) value="{{$projectType->link}}"
-                                           @else value="{{$projectCategorySelected->link.'/'}}" @endif>
+                                           @else value="{{url('/').$projectCategorySelected->link.'/type'}}" @endif>
                                 </div>
                             </div>
                             <div class="form-group">

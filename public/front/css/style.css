@@ -1245,7 +1245,7 @@ li.current .sub-nav-links{
 	font-family: 'Calibre-Regular',"ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ","Meiryo",Osaka,"ＭＳ Ｐゴシック", "MS PGothic",sans-serif;
 	letter-spacing: 0.05em;
 }
-.sections [lang="ja"]{
+.sections [lang="vi"]{
 	font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ","Meiryo",Osaka,"ＭＳ Ｐゴシック", "MS PGothic",sans-serif;
 	letter-spacing: 0;
 }
@@ -1682,8 +1682,14 @@ li.current .sub-nav-links{
 .section pre,
 .section code,
 .section p {
-	margin-bottom: 2em;
+	/*margin-bottom: 2em;*/
 }
+
+.section p{
+	height: auto;
+	/*line-height: 2;*/
+}
+
 
 .section table ul, .section table ol, .section table dl, .section table p,
 .section ul ul, .section ul ol, .section ul dl, .section ul p,
@@ -3345,7 +3351,7 @@ textarea.focus,
 	margin-bottom:1em;
 }
 
-#profile .section [lang="ja"] {
+#profile .section [lang="vi"] {
 	font-size:83%;
 	line-height:2.2;
 }
@@ -3359,18 +3365,18 @@ textarea.focus,
 	vertical-align: top;
 }
 
-#profile .studio [lang="ja"],
-#profile .showroom [lang="ja"],
-#profile .staff [lang="ja"] {
+#profile .studio [lang="vi"],
+#profile .showroom [lang="vi"],
+#profile .staff [lang="vi"] {
 	line-height:1.8;
 }
-#profile .studio [lang="ja"] h4,
-#profile .showroom [lang="ja"] h4,
-#profile .staff [lang="ja"] h4 {
+#profile .studio [lang="vi"] h4,
+#profile .showroom [lang="vi"] h4,
+#profile .staff [lang="vi"] h4 {
 	line-height:2;
 }
 
-#profile .studio [lang="ja"] p:nth-child(2){
+#profile .studio [lang="vi"] p:nth-child(2){
 	margin-bottom:0.5em;
 }
 
@@ -3479,7 +3485,7 @@ textarea.focus,
 	margin-bottom:1em;
 }
 
-#press .section [lang="ja"] {
+#press .section [lang="vi"] {
 	font-size:83%;
 	line-height:2.2;
 }
@@ -3606,17 +3612,17 @@ textarea.focus,
     padding: 0;
 }
 
-#contact.overlay .section-tabled .tabled-td > [lang="ja"]{
+#contact.overlay .section-tabled .tabled-td > [lang="vi"]{
 	font-size:83%;
 }
 
-#contact.overlay .section-tabled .tabled-td > [lang="ja"],
+#contact.overlay .section-tabled .tabled-td > [lang="vi"],
 #contact.overlay .section-tabled .tabled-td > [lang="en"]{
 	float:left;
 	width:50%;
 	padding: 0 20px;
 }
-#contact.overlay .section-tabled .tabled-td > [lang="ja"] p:last-child,
+#contact.overlay .section-tabled .tabled-td > [lang="vi"] p:last-child,
 #contact.overlay .section-tabled .tabled-td > [lang="en"] p:last-child{
 	margin-bottom:0;
 }
@@ -3629,7 +3635,7 @@ textarea.focus,
 }
 
 @media only screen and (max-width: 600px){
-	#contact.overlay .section-tabled .tabled-td > [lang="ja"],
+	#contact.overlay .section-tabled .tabled-td > [lang="vi"],
 	#contact.overlay .section-tabled .tabled-td > [lang="en"]{
 		float:none;
 		width:100%;

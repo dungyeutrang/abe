@@ -36,7 +36,7 @@ class ProjectTypeRequest extends Request
         $categoryId = isset($data['project_category_id']) ? $data['project_category_id'] : 0;
         $projectCategory = ProjectCategory::find($categoryId);
         if ($projectCategory) {
-            $url = $projectCategory->link;
+            $url = url('/').$projectCategory->link.'/type';
         } else {
             $url = null;
         }

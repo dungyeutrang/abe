@@ -63,7 +63,8 @@
                                     <select name="new_id" id="new_id" class="form-control">
                                         <?php $newTypeSelected = $newTypes[0] ?>
                                         @foreach($newTypes as $newType)
-                                            <option link="{{url('/').$newType->link}}" @if(($id && $newType->id==$new->new_id) || (!$id && old('new_id')==$new->new_id)) selected
+                                            <option link="{{url('/').$newType->link}}"
+                                                    @if(($id && $newType->id==$new->new_id) || (!$id && old('new_id')==$new->new_id)) selected
                                                     <?php $newTypeSelected = $newType ?>
                                                     @endif value="{{$newType->id}}">{{$newType->name}}
                                             </option>
@@ -90,7 +91,16 @@
                             <div class="form-group">
                                 <label for="desc" class="col-sm-2 control-label">Description</label>
                                 <div class="col-sm-9">
-                                    <div style="min-height: 150px" id="desc">{{$new->desc}}</div>
+
+                                    <div style="min-height: 150px" class="ql-container ql-snow"
+                                         id="desc">{!! $new->desc  !!}</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="desc" class="col-sm-2 control-label">More Description</label>
+                                <div class="col-sm-9">
+                                    <div style="min-height: 150px" id="more_desc">{!! $new->more_desc !!}</div>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -175,6 +185,6 @@
     <script type="text/javascript" src="{{asset('plugins/select2/select2.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('plugins/datepicker/bootstrap-datepicker.js')}}"></script>
     <script type="text/javascript" src="{{asset('plugins/datepicker/locales/bootstrap-datepicker.vi.js')}}"></script>
-    <script src="https://cdn.quilljs.com/1.1.1/quill.js"></script>
+    <script type="text/javascript" src="{{asset('plugins/quill/quill.js')}}"></script>
     <script type="text/javascript" src="{{asset('back/js/new/update.js')}}"></script>
 @endsection

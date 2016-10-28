@@ -10,20 +10,21 @@ use Illuminate\Http\Request;
 class ProjectController extends Controller
 {
 
-    const PROJECT_TYPE = 'type';
-    const PROJECT_PRODUCER = 'producer';
-    const PROJECT_YEAR = 'year';
 
     public function index()
     {
 
-        $data = Project::all();
+        $data = Project::orderBy('updated_at','desc')->get();
         $categories = ProjectCategory::all();
-        $categoryByYear = Project::groupProjectByYear();
-        $categoryByProducer = Project::groupProjectByProducer();
-        $categoryByType = Project::groupProjectByType();
+        $groupItem = array();
+        foreach ($categories as $cate) {
+            $groupItem[$cate->id] = array();
+            $groupItem[$cate->id]['years'] = Project::groupProjectByYear($cate->id);
+            $groupItem[$cate->id]['types'] = Project::groupProjectByType($cate->id);
+            $groupItem[$cate->id]['producers'] = Project::groupProjectByProducer($cate->id);
+        }
         $listProjectByCategories = Project::groupProjectByCategory();
-        return view('front.project.index', compact('data', 'categories', 'categoryByYear', 'categoryByProducer', 'categoryByType', 'listProjectByCategories'));
+        return view('front.project.index', compact('data', 'categories', 'groupItem', 'listProjectByCategories'));
     }
 
     public function category(Request $request)
@@ -36,18 +37,20 @@ class ProjectController extends Controller
         $data = Project::getProjectByCategoryUrl($url);
         $categoryName = $category->name;
         $categories = ProjectCategory::all();
-        $categoryByYear = Project::groupProjectByYear();
-        $categoryByProducer = Project::groupProjectByProducer();
-        $categoryByType = Project::groupProjectByType();
+        $groupItem = array();
+        foreach ($categories as $cate) {
+            $groupItem[$cate->id] = array();
+            $groupItem[$cate->id]['years'] = Project::groupProjectByYear($cate->id);
+            $groupItem[$cate->id]['types'] = Project::groupProjectByType($cate->id);
+            $groupItem[$cate->id]['producers'] = Project::groupProjectByProducer($cate->id);
+        }
         $listProjectByCategories = Project::groupProjectByCategory();
         return view('front.project.category',
             compact('data',
                 'url',
                 'categoryName',
                 'categories',
-                'categoryByYear',
-                'categoryByProducer',
-                'categoryByType',
+                'groupItem',
                 'listProjectByCategories'
             )
         );
@@ -55,21 +58,108 @@ class ProjectController extends Controller
 
     public function type(Request $request, $category, $type, $detail)
     {
+        $url = str_replace(url('/'), '', $request->fullUrl());
+
         switch ($type) {
-            case self::PROJECT_PRODUCER:
-                $this->listByProducer($request, $category, $type, $detail);
+            case PROJECT_PRODUCER:
+                $url = str_replace('/' . PROJECT_PRODUCER, '', $url);
+                $url = str_replace('/' . $detail, '', $url);
+                $category = ProjectCategory::where('link', $url)->first();
+                if (!$category) {
+                    return redirect()->route('front.index');
+                }
+                $data = Project::getProjectByCategoryAndProducerSlug($category->id, $detail);
+                break;
+            case PROJECT_YEAR:
+                $url = str_replace('/' . PROJECT_YEAR, '', $url);
+                $url = str_replace('/' . $detail, '', $url);
+                $category = ProjectCategory::where('link', $url)->first();
+                if (!$category) {
+                    return redirect()->route('front.index');
+                }
+                $data = Project::getProjectByCategoryAndYear($category->id, $detail);
+                break;
+            case PROJECT_TYPE:
+                $urlOld = $url;
+                $url = str_replace('/' . PROJECT_TYPE, '', $url);
+                $url = str_replace('/' . $detail, '', $url);
+                $detail = $urlOld;
+                $category = ProjectCategory::where('link', $url)->first();
+                if (!$category) {
+                    return redirect()->route('front.index');
+                }
+                $data = Project::getProjectByCategoryAndType($detail);
                 break;
             default:
                 return redirect()->route('front.index');
         }
 
+        $categoryName = $category->name;
+        $categories = ProjectCategory::all();
+        $groupItem = array();
+        foreach ($categories as $cate) {
+            $groupItem[$cate->id] = array();
+            $groupItem[$cate->id]['years'] = Project::groupProjectByYear($cate->id);
+            $groupItem[$cate->id]['types'] = Project::groupProjectByType($cate->id);
+            $groupItem[$cate->id]['producers'] = Project::groupProjectByProducer($cate->id);
+        }
+        $listProjectByCategories = Project::groupProjectByCategory();
+        return view('front.project.type',
+            compact('data',
+                'url',
+                'detail',
+                'type',
+                'categoryName',
+                'category',
+                'categories',
+                'groupItem',
+                'listProjectByCategories'
+            )
+        );
+
     }
 
-    function listByProducer($request, $category, $type, $detail)
+    public function detail(Request $request)
     {
         $url = str_replace(url('/'), '', $request->fullUrl());
-        $url = str_replace('/'.self::PROJECT_PRODUCER, '', $url);
-        $url = str_replace('/'.$detail, '', $url);
-        $category = ProjectCategory::where('link', $url)->first();
+        $project = Project::where('link',$url)->first();
+        if(!$project){
+            return redirect()->route('front.index');
+        }
+        $category = $project->projectCategory;
+        $url = $category->url;
+        $projectImages = $project->projectImage;
+        $projectTypes = $project->projectContentType;
+        if (!$category) {
+            return redirect()->route('front.index');
+        }
+        $categoryName = $category->name;
+        $categories = ProjectCategory::all();
+        $groupItem = array();
+        foreach ($categories as $cate) {
+            $groupItem[$cate->id] = array();
+            $groupItem[$cate->id]['years'] = Project::groupProjectByYear($cate->id);
+            $groupItem[$cate->id]['types'] = Project::groupProjectByType($cate->id);
+            $groupItem[$cate->id]['producers'] = Project::groupProjectByProducer($cate->id);
+        }
+        $listProjectByCategories = Project::groupProjectByCategory();
+        $before = Project::where('id','>',$project->id)->where('category_id',$category->id)->first();
+        $after = Project::where('id','<',$project->id)->where('category_id',$category->id)->orderBy('id','desc')->first();
+        $linkCategory = url('/').$category->link;
+        return view('front.project.detail',
+            compact('project',
+                'url',
+                'linkCategory',
+                'projectImages',
+                'projectTypes',
+                'categoryName',
+                'categories',
+                'groupItem',
+                'listProjectByCategories',
+                'before',
+                'after'
+            )
+        );
     }
+
 }

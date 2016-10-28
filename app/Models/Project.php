@@ -55,48 +55,52 @@ class Project extends Model
         return self::join('tbl_project_categories', 'tbl_projects.category_id', '=', 'tbl_project_categories.id')
             ->where('tbl_project_categories.link', $url)
             ->select(['tbl_projects.*'])
+            ->orderBy('tbl_projects.updated_at','desc')
             ->get();
     }
 
     /**
      * get project by year
-     *
+     * @param $categoryId
      * @return mixed
      */
-    public static function groupProjectByYear()
+    public static function groupProjectByYear($categoryId)
     {
-        return self::select('year','category_id',DB::raw('count(tbl_projects.id) as count'))
-            ->join('tbl_project_categories', 'tbl_projects.category_id', '=', 'tbl_project_categories.id')
+        return self::select('year', DB::raw('count(tbl_projects.id) as count'))
+            ->where('category_id', $categoryId)
             ->groupBy('year')
             ->get();
+
     }
 
     /**
      * get project by producer
-     *
+     * @param $categoryId
      * @return mixed
      */
-    public static function groupProjectByProducer()
+    public static function groupProjectByProducer($categoryId)
     {
-        return self::select('producer_id','category_id',DB::raw('count(tbl_projects.id) as count'))
-            ->join('tbl_project_categories', 'tbl_projects.category_id', '=', 'tbl_project_categories.id')
+        return self::select('producer_id', 'tbl_project_producers.name', 'tbl_project_producers.slug', DB::raw('count(tbl_projects.id) as count'))
+            ->join('tbl_project_producers', 'tbl_projects.producer_id', '=', 'tbl_project_producers.id')
+            ->where('category_id', $categoryId)
             ->groupBy('producer_id')
             ->get();
     }
 
     /**
      * get project by producer
-     *
+     * @param  $categoryId
      * @return mixed
      */
-    public static function groupProjectByType()
+    public static function groupProjectByType($categoryId)
     {
-        return ProjectContentType::select('tbl_project_types.link','project_type_id','category_id',DB::raw('count(tbl_project_content_types.id) as count'))
+        return ProjectContentType::select('tbl_project_types.link', 'project_type_id', 'category_id', DB::raw('count(tbl_project_content_types.id) as count'))
             ->join('tbl_projects', 'tbl_projects.id', '=', 'tbl_project_content_types.project_id')
             ->join('tbl_project_types', 'tbl_project_types.id', '=', 'tbl_project_content_types.project_type_id')
-            ->groupBy('category_id')
+            ->where('tbl_projects.category_id', $categoryId)
             ->groupBy('project_type_id')
             ->get();
+
     }
 
     /**
@@ -106,8 +110,51 @@ class Project extends Model
      */
     public static function groupProjectByCategory()
     {
-        return self::select('category_id',DB::raw('count(id) as count'))
+        return self::select('category_id', DB::raw('count(id) as count'))
             ->groupBy('category_id')->get();
+    }
+
+    /**
+     * get project by category and producer
+     *
+     * @param $categoryId
+     * @param $slug
+     * @return mixed
+     */
+    public static function getProjectByCategoryAndProducerSlug($categoryId, $slug)
+    {
+        return self::select(DB::raw('tbl_projects.*'))
+            ->join('tbl_project_producers', 'tbl_project_producers.id', '=', 'tbl_projects.producer_id')
+            ->where('category_id', $categoryId)
+            ->where('slug', $slug)
+            ->orderBy('tbl_projects.updated_at','desc')
+            ->get();
+    }
+
+    /**
+     * get project by category and year
+     *
+     * @param $categoryId
+     * @param $year
+     * @return mixed
+     */
+    public static function getProjectByCategoryAndYear($categoryId, $year)
+    {
+        return self::select(DB::raw('tbl_projects.*'))
+            ->where('category_id', $categoryId)
+            ->where('year', $year)
+            ->orderBy('updated_at','desc')
+            ->get();
+    }
+
+    public static function getProjectByCategoryAndType($urlType)
+    {
+        return self::select(DB::raw('tbl_projects.*'))
+            ->join('tbl_project_content_types', 'tbl_projects.id', '=', 'tbl_project_content_types.project_id')
+            ->join('tbl_project_types', 'tbl_project_types.id', '=', 'tbl_project_content_types.project_type_id')
+            ->where('tbl_project_types.link', $urlType)
+            ->orderBy('tbl_projects.updated_at','desc')
+            ->get();
     }
 
 }

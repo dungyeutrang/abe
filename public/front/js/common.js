@@ -813,7 +813,6 @@
 		var dfd = $.Deferred();
 		var $new_content = _perseHTML(res);
 		var title = res.match(/<title>(.*)<\/title>/)[1];
-
 		var prev = $('#contents > .content').attr('id'),
 			next = $new_content.find('#contents > .content').attr('id');
 

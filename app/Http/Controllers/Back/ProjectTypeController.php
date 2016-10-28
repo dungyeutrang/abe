@@ -59,7 +59,7 @@ class ProjectTypeController extends MyPageController
                 ->withInput();
         }
         $projectType->name = $request->get('name');
-        $projectType->link = $request->get('link');
+        $projectType->link = str_replace(url('/'),'',$request->get('link'));
         $projectType->project_category_id = $request->get('project_category_id');
         $projectType->save();
         if ($id) {

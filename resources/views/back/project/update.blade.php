@@ -124,7 +124,7 @@
                             <div class="form-group">
                                 <label for="project_category_id" class="col-sm-2 control-label">Description</label>
                                 <div class="col-sm-9">
-                                    <div style="min-height: 150px" id="desc">{{$project->desc}}</div>
+                                    <div style="min-height: 150px" id="desc">{!! $project->desc !!}</div>
                                 </div>
                             </div>
                             <div class="form-group">
