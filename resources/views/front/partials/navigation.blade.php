@@ -5,8 +5,6 @@
         <li><a @if(str_contains(Request::fullUrl(),route('front.profile'))) class="current" @endif href="{{route('front.profile')}}"><span>PROFILE</span></a></li>
         <li><a @if(str_contains(Request::fullUrl(),route('front.press'))) class="current" @endif  href="{{route('front.press')}}"><span>PRESS</span></a></li>
         <li><a href="{{route('front.contact')}}"><span>CONTACT</span></a></li>
-        <li><a href="#" class="external"><span>TAIYOU&C.</span></a></li>
-        <li><a href="#" class="external"><span>TAIYOU no SHITA</span></a></li>
-        <li><a href="#" class="external"><span><i class="icon_fb"></i></span></a></li>
+        <li><a href="{{env('LINK_FACEBOOK')}}" class="external"><span><i class="icon_fb"></i></span></a></li>
     </ul>
 </nav>

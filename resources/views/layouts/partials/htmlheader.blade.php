@@ -18,6 +18,7 @@
     <link href="{{ asset('/css/skins/skin-blue.css') }}" rel="stylesheet" type="text/css"/>
     <!-- iCheck -->
     <link href="{{ asset('/plugins/iCheck/square/blue.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ asset('/css/main-backend.css') }}" rel="stylesheet" type="text/css"/>
     @section('css')
 
     @show

@@ -56,7 +56,7 @@
                                 <td>{{str_limit($dt->name,STR_LIMIT)}}</td>
                                 <td>{{$dt->date}}</td>
                                 <td>{{$dt->newType->name}}</td>
-                                <td><img class="img img-responsive" src="{{asset('upload/'.$dt->image_thumb)}}"
+                                <td><img class="img img-responsive img-thumb-new" src="{{asset('upload/'.$dt->image_thumb)}}"
                                          onerror="this.src='{{asset('img/noimage.gif')}}'"></td>
                                 <td>{{date(FORMAT_DATE,strtotime($dt->updated_at))}}</td>
                                 <td>

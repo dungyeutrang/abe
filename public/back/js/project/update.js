@@ -83,7 +83,7 @@ $(function () {
             var reader = new FileReader();
             reader.onload = function (e) {
                 $('#image_preview').attr('src', e.target.result);
-            }
+            };
             reader.readAsDataURL($imageThumb.get(0).files[0]);
             $('#image_thumb_container').addClass('hide');
             $('#image_preview_container').removeClass('hide');
@@ -157,7 +157,7 @@ $(function () {
                 progressBar: '.bar',
                 remove: '.jFiler-item-trash-action'
             }
-        },
+        }
     };
 
     var listFiles = [];
@@ -168,7 +168,7 @@ $(function () {
             name: value.split('/').pop(),
             type: 'image/' + value.split('.').pop(),
             file: BASE_PATH_FILE + value,
-            url: value,
+            url: value
         });
     });
 
@@ -181,6 +181,10 @@ $(function () {
         extensions: ['jpg', 'png', 'gif', 'jpeg'],
         addMore: true,
         files: listFiles,
+        canvasImage: {
+            width: 188,
+            height: 143
+        },
         afterRender: function () {
             var filerKit = $("#images").prop("jFiler").files_list;
             $.each(filerKit, function (index, obj) {
@@ -193,7 +197,7 @@ $(function () {
         $('#myModal').hide(function () {
             $('input[type="file"]').prop('disabled', false);
         });
-    })
+    });
 
     $('#save').click(function () {
         var formData = new FormData();
@@ -231,7 +235,7 @@ $(function () {
             }
 
             formData.append('captions[]', $('.caption').eq(index).val());
-        })
+        });
 
         formData.append('desc', $('#desc .ql-editor').html());
 
@@ -264,7 +268,7 @@ $(function () {
         })
     });
 
-})
+});
 
 function previewImage(e) {
     var index = $(e).index('.icon-jfi-eye');
@@ -280,7 +284,7 @@ function previewImage(e) {
         reader.onload = function (e) {
             $('#image_preview_modal').attr('src', e.target.result);
             $('#myModal').show();
-        }
+        };
         reader.readAsDataURL(file);
     }
 
