@@ -18,11 +18,49 @@ use DB;
 class ProjectController extends MyPageController
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = Project::orderBy('updated_at', 'desc')->paginate(PAGINATION_PROJECT);
+        $name = $request->get('name');
+        $year = $request->get('year');
+        $producer = $request->get('producer');
+        $category = $request->get('category');
+
+        $projectCategories = ProjectCategory::getCategoryByProjectType();
+        $projectProducers = ProjectProducer::all();
+        if (empty($name) && empty($year) && empty($producer) && empty($producer)) {
+            if (isset($projectProducers[0])) {
+                $query = Project::where('producer_id', $projectProducers[0]->id);
+                if (isset($projectCategories[0])) {
+                    $query = $query->where('category_id', $projectCategories[0]->project_category_id);
+                }
+                $data = $query->orderBy('updated_at', 'desc')->paginate(PAGINATION_PROJECT);
+            } else {
+                if (isset($projectCategories[0])) {
+                    $data = Project::where('category_id', $projectCategories[0]->project_category_id)->orderBy('updated_at', 'desc')->paginate(PAGINATION_PROJECT);
+                } else {
+                    $data = Project::orderBy('updated_at', 'desc')->paginate(PAGINATION_PROJECT);
+                }
+            }
+
+        } else {
+            if (!empty($name)) {
+                $query = Project::where('name', 'like', '%' . $name . '%');
+                if (!empty($year)) {
+                    $query = $query->where('year', 'like', '%' . $year . '%');
+                }
+            } else {
+                $query = Project::where('year', 'like', '%' . $year . '%');
+            }
+            if (!empty($producer)) {
+                $query = $query->where('producer_id', 'like', '%' . $producer . '%');
+            }
+            if (!empty($category)) {
+                $query = $query->where('category_id', 'like', '%' . $category . '%');
+            }
+            $data = $query->orderBy('updated_at', 'desc')->paginate(PAGINATION_PROJECT);
+        }
         $indexBegin = ($data->currentPage() - 1) * PAGINATION_PROJECT;
-        return view('back.project.index', compact('data', 'indexBegin'));
+        return view('back.project.index', compact('data', 'indexBegin', 'projectCategories', 'projectProducers', 'name', 'year', 'producer', 'category'));
     }
 
     public function update(Request $request, $id = null)
@@ -69,7 +107,7 @@ class ProjectController extends MyPageController
             $oldPathImageThumb = $project->image_thumb;
             $project->name = $request->get('name');
             $project->year = $request->get('year');
-            $project->link = str_replace(url('/'),'',$request->get('link'));
+            $project->link = str_replace(url('/'), '', $request->get('link'));
             $project->category_id = $request->get('project_category_id');
             $project->producer_id = $request->get('project_producer_id');
             if ($request->hasFile('thumb')) {

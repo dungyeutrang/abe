@@ -11,11 +11,35 @@ use Illuminate\Support\Facades\Session;
 
 class NewController extends MyPageController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $data = News::orderBy('updated_at', 'desc')->paginate(PAGINATION_NEW);
+        $name = $request->get('name');
+        $date = $request->get('date');
+        $type = $request->get('type');
+        $newTypes = NewType::all();
+        if (empty($name) && empty($date) && empty($type)) {
+            if (isset($newTypes[0])) {
+                $data = News::where('new_id', $newTypes[0]->id)->orderBy('updated_at', 'desc')->paginate(PAGINATION_NEW);
+            } else {
+                $data = News::orderBy('updated_at', 'desc')->paginate(PAGINATION_NEW);
+            }
+        } else {
+            if (!empty($name)) {
+                $query = News::where('name', 'like', '%' . $name . '%');
+                if (!empty($year)) {
+                    $query = $query->where('date', 'like', '%' . $date . '%');
+                }
+            } else {
+                $query = News::where('date', 'like', '%' . $date . '%');
+            }
+            if (!empty($type)) {
+                $query = $query->where('new_id', 'like', '%' . $type . '%');
+            }
+            $data = $query->orderBy('updated_at', 'desc')->paginate(PAGINATION_NEW);
+        }
+
         $indexBegin = ($data->currentPage() - 1) * PAGINATION_NEW;
-        return view('back.new.index', compact('data', 'indexBegin'));
+        return view('back.new.index', compact('data', 'indexBegin', 'name', 'date', 'type', 'newTypes'));
     }
 
     public function update(Request $request, $id = null)
@@ -45,7 +69,7 @@ class NewController extends MyPageController
 
         $oldPathImageThumb = $new->image_thumb;
         $new->name = $request->get('name');
-        $new->link = str_replace(url('/'),'',$request->get('link'));
+        $new->link = str_replace(url('/'), '', $request->get('link'));
         $new->date = $request->get('date');
         $new->new_id = $request->get('new_id');
         if ($request->hasFile('thumb')) {

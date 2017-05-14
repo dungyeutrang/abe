@@ -8,6 +8,10 @@
     Project
 @endsection
 
+@section('css')
+    <link rel="stylesheet" href="{{asset('plugins/datepicker/datepicker3.css')}}" type="text/css">
+@endsection
+
 @section('main-content')
     @if(Session::has('message_error'))
         <div class="alert alert-danger">
@@ -33,6 +37,38 @@
                             <i class="fa fa-plus"></i> Add
                         </a>
                     </div>
+                    <div class="search-box">
+                        <div class="row-fluid">
+                            <form method="post" action="" class="form-inline text-center form-search-list-project">
+                                {{csrf_field()}}
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Name" name="name" value="{{$name}}">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Year" name="year" id="year" value="{{$year}}">
+                                </div>
+                                <div class="form-group">
+                                    <select name="producer" class="form-control" id="">
+                                        @foreach($projectProducers as $pro)
+                                            <option @if($pro->id == $producer) selected @endif value="{{$pro->id}}">{{$pro->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select name="category" class="form-control" id="">
+                                        @foreach($projectCategories as $cate)
+                                            <option @if($cate->project_category_id == $category) selected @endif value="{{$cate->project_category_id}}">{{$cate->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-success search-btn"><span
+                                                class="glyphicon glyphicon-search"></span></button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body table-responsive no-padding">
@@ -57,7 +93,9 @@
                                 <td>{{$dt->year}}</td>
                                 <td>{{$dt->projectProducer->name}}</td>
                                 <td>{{$dt->projectCategory->name}}</td>
-                                <td><img class="img img-responsive img-thumb-project" src="{{asset('upload/'.$dt->image_thumb)}}" onerror="this.src='{{asset('img/noimage.gif')}}'"></td>
+                                <td><img class="img img-responsive img-thumb-project"
+                                         src="{{asset('upload/'.$dt->image_thumb)}}"
+                                         onerror="this.src='{{asset('img/noimage.gif')}}'"></td>
                                 <td>{{date(FORMAT_DATE,strtotime($dt->updated_at))}}</td>
                                 <td>
                                     <a class="btn btn-sm btn-warning"
@@ -81,4 +119,10 @@
             </div> <!-- /box -->
         </div> <!-- /col -->
     </div> <!--/row-->
+@endsection
+@section('script')
+    @parent
+    <script type="text/javascript" src="{{asset('plugins/datepicker/bootstrap-datepicker.js')}}"></script>
+    <script type="text/javascript" src="{{asset('plugins/datepicker/locales/bootstrap-datepicker.vi.js')}}"></script>
+    <script type="text/javascript" src="{{asset('back/js/project/index.js')}}"></script>
 @endsection

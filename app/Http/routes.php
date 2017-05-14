@@ -50,7 +50,7 @@ Route::group(['namespace' => 'Back', 'prefix' => 'admin'], function () {
     Route::any('/new-type/update/{id?}', 'NewTypeController@update')->name('back.new_type.update');
     Route::any('/new-type/destroy/{id}', 'NewTypeController@destroy')->name('back.new_type.destroy');
 
-    Route::get('/new', 'NewController@index')->name('back.new');
+    Route::any('/new', 'NewController@index')->name('back.new');
     Route::any('/new/update/{id?}', 'NewController@update')->name('back.new.update');
     Route::any('/new/destroy/{id}', 'NewController@destroy')->name('back.new.destroy');
 

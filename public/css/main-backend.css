@@ -6,3 +6,25 @@
 .jFiler-item-thumb-image img{
     width: 100%;
 }
+.search-box{
+    margin: 15px 0;
+}
+.form-search-list-project .form-group{
+    margin-right: 10px;
+}
+
+@media (min-width: 965px) and (max-width: 1013px){
+    .form-search-list-project .search-btn{
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 964px){
+    .form-search-list-project .form-group{
+        display: block;
+        margin-top: 15px;
+    }
+    .form-search-list-project .form-control{
+        width: 100%;
+    }
+}
