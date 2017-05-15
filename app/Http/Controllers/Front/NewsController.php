@@ -35,9 +35,20 @@ class NewsController extends Controller
         $currentNew = News::where('link',$url)->first();
         $newTypeCurrent = $currentNew->newType;
         $newTypes = NewType::orderBy('name', 'desc')->get();
-        $before = News::where('id','>',$currentNew->id)->where('new_id',$currentNew->new_id)->first();
-        $after = News::where('id','<',$currentNew->id)->where('new_id',$currentNew->new_id)->orderBy('id','desc')->first();
-
+        $listAllNewsId = News::select(['id','link'])->where('new_id',$currentNew->new_id)->orderBy('updated_at', 'desc')->get();
+        foreach ($listAllNewsId as $index => $newId) {
+            if ($newId->id == $currentNew->id) {
+                $before = null;
+                if (isset($listAllNewsId[$index - 1])) {
+                    $before = $listAllNewsId[$index - 1];
+                }
+                $after = null;
+                if(isset($listAllNewsId[$index+1])){
+                    $after = $listAllNewsId[$index+1];
+                }
+                break;
+            }
+        }
         return view('front.new.detail', compact('currentNew', 'newTypes', 'newTypeCurrent','before','after'));
     }
 }

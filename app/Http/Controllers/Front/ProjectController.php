@@ -14,7 +14,7 @@ class ProjectController extends Controller
     public function index()
     {
 
-        $data = Project::orderBy('updated_at','desc')->get();
+        $data = Project::orderBy('updated_at', 'desc')->get();
         $categories = ProjectCategory::all();
         $groupItem = array();
         foreach ($categories as $cate) {
@@ -122,8 +122,8 @@ class ProjectController extends Controller
     public function detail(Request $request)
     {
         $url = str_replace(url('/'), '', $request->fullUrl());
-        $project = Project::where('link',$url)->first();
-        if(!$project){
+        $project = Project::where('link', $url)->first();
+        if (!$project) {
             return redirect()->route('front.index');
         }
         $category = $project->projectCategory;
@@ -143,9 +143,21 @@ class ProjectController extends Controller
             $groupItem[$cate->id]['producers'] = Project::groupProjectByProducer($cate->id);
         }
         $listProjectByCategories = Project::groupProjectByCategory();
-        $before = Project::where('id','>',$project->id)->where('category_id',$category->id)->first();
-        $after = Project::where('id','<',$project->id)->where('category_id',$category->id)->orderBy('id','desc')->first();
-        $linkCategory = url('/').$category->link;
+        $listAllProjectId = Project::select(['id','link'])->orderBy('updated_at', 'desc')->get();
+        foreach ($listAllProjectId as $index => $prId) {
+            if ($prId->id == $project->id) {
+                $before = null;
+                if (isset($listAllProjectId[$index - 1])) {
+                    $before = $listAllProjectId[$index - 1];
+                }
+                $after = null;
+                if(isset($listAllProjectId[$index+1])){
+                    $after = $listAllProjectId[$index+1];
+                }
+                break;
+            }
+        }
+        $linkCategory = url('/') . $category->link;
         return view('front.project.detail',
             compact('project',
                 'url',

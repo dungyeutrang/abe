@@ -156,7 +156,7 @@
             <div class="entry-detail">
                 <h1 class="title">{{strtoupper($project->name)}}</h1>
                 <ul class="categories">
-                    <li>{{strtoupper($project->projectCategory->name)}}</li>
+                    <li>{{$project->projectCategory->name}}</li>
                     <li>{{$project->year}}</li>
                     @foreach($projectTypes as $projectType)
                         <li>{{$projectType->projectType->name}}</li>
@@ -165,9 +165,7 @@
                 <p class="body">
                     {!! $project->desc !!}
                 </p>
-
             </div>
-
             <div class="copy wfont">&copy; {{env('HOST_NAME')}} INC. All Rights Reserved.</div>
         </div>
         <script type="text/javascript" src="{{asset('front/js/portfolio_detail.js')}}"></script>
